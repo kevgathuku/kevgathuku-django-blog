@@ -10,7 +10,7 @@ class Post(models.Model):
     content = models.TextField()
     created = models.DateTimeField(db_index=True)
     tags = TaggableManager(blank=True)
-    meta_desc = models.CharField(max_length=150,blank=True)
+    meta_desc = models.TextField(blank=True)
     author = models.ForeignKey(User)
     category = models.ForeignKey('Category')
     published = models.BooleanField(default=False)
@@ -21,7 +21,7 @@ class Post(models.Model):
 class Category(models.Model):
     name = models.CharField(max_length=100,unique=True)
     slug = models.SlugField(unique=True)
-    description = models.TextField()
+    description = models.TextField(blank=True)
 
     class Meta:
         verbose_name_plural = "Categories"
