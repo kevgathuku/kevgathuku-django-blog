@@ -1,0 +1,5 @@
+Django==1.7.1
+Pillow==2.6.1
+dj-database-url==0.3.0
+django-taggit==0.12.2
+psycopg2==2.5.4
