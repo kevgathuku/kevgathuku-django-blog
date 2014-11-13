@@ -20,9 +20,10 @@ class PostFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = models.Post
 
+    title = factory.Sequence(lambda n: 'My {0} title'.format(n))
     category = factory.SubFactory(CategoryFactory)
     created = factory.LazyAttribute(lambda x: datetime.now())
-    slug = factory.Sequence(lambda n: slugify(n))
+    slug = factory.LazyAttribute(lambda n: slugify(n.title))
     author = factory.SubFactory(UserFactory)
 
 
