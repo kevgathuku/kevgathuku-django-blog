@@ -1,8 +1,8 @@
 from django.conf.urls import patterns, url
 
+from blog.views import ShowPost
+
 urlpatterns = patterns('',
-    # Examples:
-    #url(r'^admin/', include(admin.site.urls)),
-    url(r'^about/$', 'blog.views.about', name='about'),
-    url(r'^contact/$', 'blog.views.contact', name='contact'),
+	
+    url(r'^(?P<slug>[-\w]+)/$', ShowPost.as_view(), name='post'),
 )
