@@ -7,6 +7,8 @@ class LayoutAndStylingTest(FunctionalTest):
         self.browser.get(self.live_server_url)
 
         self.assertIn("Kevin Ndung'u", self.browser.title)
+        self.assertIn("Home", self.browser.title)
+
         header_text = self.browser.find_element_by_tag_name('h1').text
         self.assertIn('Kevin', header_text)
 
@@ -21,3 +23,9 @@ class LayoutAndStylingTest(FunctionalTest):
             512,
             delta=5
         )
+
+        footer = self.browser.find_element_by_tag_name('footer')
+        links = footer.find_elements_by_tag_name('a')
+        twitter_link = links[0]
+
+        self.assertIn('https://twitter.com/kevgathuku', twitter_link.get_attribute('href'))

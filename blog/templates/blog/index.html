@@ -1,5 +1,7 @@
 {% extends "blog/base.html" %}
 
+{% load humanize %}
+
 {% block title %} Home {% endblock %}
 
 {% block header %}
@@ -21,26 +23,19 @@
     {% endblock %}
 
 {% block main %}
-    
+    {% for post in posts %}
     <div class="post-preview">
-        <a href="post.html">
+        <a href="{{ post.get_absolute_url }}">
             <h2 class="post-title">
-                Man must explore, and this is exploration at its greatest
+                {{post.title}}
             </h2>
             <h3 class="post-subtitle">
-                Problems look mighty small from 150 miles up
+                {{post.subtitle}}
             </h3>
         </a>
-        <p class="post-meta">Posted by <a href="#">Start Bootstrap</a> on September 24, 2014</p>
-    </div>
-    <hr>
-    <div class="post-preview">
-        <a href="post.html">
-            <h2 class="post-title">
-                I believe every human has a finite number of heartbeats. I don't intend to waste any of mine.
-            </h2>
-        </a>
-        <p class="post-meta">Posted by <a href="#">Start Bootstrap</a> on September 18, 2014</p>
+        <p>{{post.content|truncatewords_html:50|striptags}}</p>
+        <p class="post-meta"> Posted {{post.created|naturaltime}} 
+        under <a href="{{ post.category.get_absolute_url }}"> {{post.category}} </a></p>
     </div>
     <hr>
 
@@ -50,4 +45,9 @@
             <a href="#">Older Posts &rarr;</a>
         </li>
     </ul>
+
+    {% empty %}
+    <p> Nothing has been posted yet. Thanks for checking in </p>
+    {% endfor %}
+
 {% endblock %}
