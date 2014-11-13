@@ -13,7 +13,6 @@ install:
 before_script:
 - psql -c 'create database kevgathuku_test;' -U postgres
 - python manage.py migrate --noinput
-- python manage.py collectstatic --noinput
 script:
 - python manage.py test
 deploy:
