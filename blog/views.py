@@ -12,7 +12,6 @@ class ListPosts(generic.ListView):
 
 class IndexView(ListPosts):
     template_name = 'blog/index.html'
-    context_object_name = 'latest_posts'
 
     def get_queryset(self):
         """Return the last five published posts."""

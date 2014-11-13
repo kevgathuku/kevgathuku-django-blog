@@ -21,7 +21,7 @@
     {% endblock %}
 
 {% block main %}
-    {% for post in latest_posts %}
+    {% for post in posts %}
     <div class="post-preview">
         <a href="{{ post.get_absolute_url }}">
             <h2 class="post-title">
@@ -35,6 +35,8 @@
         under <a href="{{ post.category.get_absolute_url }}"> {{post.category}} </a></p>
     </div>
     <hr>
+    {% empty %}
+    <p> Nothing has been posted yet. Thanks for checking in </p>
     {% endfor %}
 
     <!-- Pager -->
