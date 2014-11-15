@@ -34,5 +34,8 @@ class ShowPost(generic.DetailView):
 def about(request):
     return render(request, 'blog/about.html')
 
+def about_site(request):
+    return render(request, 'blog/about-this-site.html')
+
 def contact(request):
     return render(request, 'blog/contact.html')
