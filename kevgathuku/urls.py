@@ -10,7 +10,9 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$',IndexView.as_view(), name='home'),
     url(r'^about/$', 'blog.views.about', name='about'),
+    url(r'^about-this-site/$', 'blog.views.about_site', name='about_site'),
     url(r'^contact/$', 'blog.views.contact', name='contact'),
     url(r'^post/', include('blog.urls', namespace='blog')),
-    url(r'^category/(?P<slug>[-\w]+)/$',CategoryView.as_view(),name='showcategory')
+    url(r'^category/(?P<slug>[-\w]+)/$',CategoryView.as_view(),name='showcategory'),
+    url(r'^ckeditor/', include('ckeditor.urls')),
 )
