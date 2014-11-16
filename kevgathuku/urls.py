@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 
-from blog.views import IndexView, CategoryView
+from blog.views import IndexView, category
 
 urlpatterns = patterns('',
     # Examples:
@@ -13,6 +13,6 @@ urlpatterns = patterns('',
     url(r'^about-this-site/$', 'blog.views.about_site', name='about_site'),
     url(r'^contact/$', 'blog.views.contact', name='contact'),
     url(r'^post/', include('blog.urls', namespace='blog')),
-    url(r'^category/(?P<slug>[-\w]+)/$',CategoryView.as_view(),name='showcategory'),
+    url(r'^category/(?P<category_name_slug>[\w\-]+)/$', category, name='category'),
     url(r'^ckeditor/', include('ckeditor.urls')),
 )
