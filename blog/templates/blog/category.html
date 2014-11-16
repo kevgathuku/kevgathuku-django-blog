@@ -4,6 +4,8 @@
 
 {% load staticfiles %}
 
+{% load markdown_deux_tags %}
+
 {% block title %}
   {% if category %}
     {{ category_name }} 
@@ -45,9 +47,10 @@
                         {{post.title}}
                     </h2>
                 </a>
-                    <p class="post-subtitle lead">
-                        {{post.subtitle}}
-                    </p>
+                <p class="post-subtitle lead">
+                    {{post.subtitle}}
+                </p>
+                <p>{{post.content|markdown:"trusted"|truncatewords_html:30|striptags}}</p>
                 <p class="post-meta"> Posted {{post.created|naturaltime}} 
                 under <a href="{{ post.category.get_absolute_url }}"> {{post.category}} </a></p>
             </div>
@@ -67,6 +70,4 @@
                 <a href="#">Older Posts &rarr;</a>
             </li>
         </ul> -->
-        
-
 {% endblock %}

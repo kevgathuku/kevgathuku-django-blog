@@ -4,6 +4,8 @@
 
 {% load humanize %}
 
+{% load markdown_deux_tags %}
+
 {% block title %} {{post.title}} {% endblock %}
 
 {% block header %}
@@ -30,7 +32,7 @@
     <!-- Post Content -->
     <article>
     {% autoescape on %}
-        {{post.content}}
+        {{post.content|markdown:"trusted"}}
     {% endautoescape %}
     </article>
 
