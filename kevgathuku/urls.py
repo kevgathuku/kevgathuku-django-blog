@@ -14,5 +14,4 @@ urlpatterns = patterns('',
     url(r'^contact/$', 'blog.views.contact', name='contact'),
     url(r'^post/', include('blog.urls', namespace='blog')),
     url(r'^category/(?P<category_name_slug>[\w\-]+)/$', category, name='category'),
-    url(r'^ckeditor/', include('ckeditor.urls')),
 )
