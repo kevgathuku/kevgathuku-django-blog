@@ -4,7 +4,17 @@
 
 {% load staticfiles %}
 
-{% block title %} {{ category_name }} {% endblock %}
+{% block title %}
+  {% if category %}
+    {{ category_name }} 
+
+  {% else %}
+
+    Error 
+
+  {% endif %}
+
+{% endblock %}
 
 {% block header %}
     <!-- Page Header -->
@@ -49,7 +59,7 @@
       {% endif %}
 
       {% else %}
-            The specified category {{ category_name }} does not exist!
+            The specified category does not exist!
         {% endif %}
         <!-- Pager -->
         <!-- ul class="pager">
