@@ -1,0 +1,45 @@
+{% extends "blog/base.html" %}
+
+{% block title %} About this Site {% endblock %}
+
+{% block header %}
+{% load staticfiles %}
+    <!-- Page Header -->
+    <!-- Set your background image for this header on the line below. -->
+    <header class="intro-header" style="background-image: url('{% static "img/about-bg.jpg" %}')">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="page-heading">
+                        <h1>About this Site </h1>
+                        <hr class="small">
+                        <span class="subheading"> This is what powers this site </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+{% endblock %}
+
+{% block main %}
+    <p>
+        Having tried many blogging engines and being unhappy with most of them, I decided to build this site
+        to scratch my own itch and also to put some of my Web Development skills to good use.
+    </p>
+    <p>
+        The content you can expect to find here will mostly be related to my latest adventures exploring 
+        programming, wherever that takes me. <br>
+        It is my hope that you will enjoy them.
+    </p>
+    <p>
+        The theme has been graciously provided by the folks at <a href="http://startbootstrap.com/template-overviews/clean-blog/"> Start Bootstrap </a>
+    </p>
+    <p>  Proudly powered by Open Source Software </p>
+    <p>
+        <a href="http://www.djangoproject.com/" target="_blank"><img src="https://www.djangoproject.com/m/img/badges/djangopowered126x54.gif" border="0" alt="Powered by Django." title="Powered by Django." /></a>
+        <a href="http://heroku.com" target="_blank">
+            <img src="{% static 'img/built-on-heroku-dark-on-light.svg' %}" alt="Powered by Heroku." 
+                 alt="Powered by Heroku."height="128">
+        </a>
+    </p>
+{% endblock %}

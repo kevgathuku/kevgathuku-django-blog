@@ -1,6 +1,6 @@
+from django import forms
 from django.contrib import admin
 
-# Register your models here.
 from blog.models import Post, Category
 
 class PostAdmin(admin.ModelAdmin):

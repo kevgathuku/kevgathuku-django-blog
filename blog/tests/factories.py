@@ -12,8 +12,8 @@ class CategoryFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = models.Category
 
-    name = factory.Sequence(lambda n: "user_%d" % n)
-    slug = factory.Sequence(lambda n: "slug-%s" % n)
+    name = factory.Sequence(lambda n: "category_%d" % n)
+    slug = factory.LazyAttribute(lambda n: slugify(n.name))
 
 
 class PostFactory(factory.django.DjangoModelFactory):

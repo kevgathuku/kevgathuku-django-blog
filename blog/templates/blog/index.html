@@ -2,6 +2,8 @@
 
 {% load humanize %}
 
+{% load markdown_deux_tags %}
+
 {% block title %} Home {% endblock %}
 
 {% block header %}
@@ -33,18 +35,18 @@
                 {{post.subtitle}}
             </h3>
         </a>
-        <p>{{post.content|truncatewords_html:50|striptags}}</p>
+        <p>{{post.content|markdown:"trusted"|truncatewords_html:50|striptags}}</p>
         <p class="post-meta"> Posted {{post.created|naturaltime}} 
         under <a href="{{ post.category.get_absolute_url }}"> {{post.category}} </a></p>
     </div>
     <hr>
 
     <!-- Pager -->
-    <ul class="pager">
+    <!-- <ul class="pager">
         <li class="next">
             <a href="#">Older Posts &rarr;</a>
         </li>
-    </ul>
+    </ul> -->
 
     {% empty %}
     <p> Nothing has been posted yet. Thanks for checking in </p>

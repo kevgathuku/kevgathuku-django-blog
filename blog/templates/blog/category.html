@@ -1,0 +1,73 @@
+{% extends "blog/base.html" %}
+
+{% load humanize %}
+
+{% load staticfiles %}
+
+{% load markdown_deux_tags %}
+
+{% block title %}
+  {% if category %}
+    {{ category_name }} 
+
+  {% else %}
+
+    Error 
+
+  {% endif %}
+
+{% endblock %}
+
+{% block header %}
+    <!-- Page Header -->
+    <!-- Set your background image for this header on the line below. -->
+    <header class="intro-header" style="background-image: url('{% static "img/home-bg.jpg" %}')">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <div class="site-heading">
+                        <h1>Kevin Ndung'u</h1>
+                        <hr class="small">
+                        <span class="subheading"> Thoughts of a Tech Hobbyist </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    {% endblock %}
+
+{% block main %}
+    {% if category %}
+    <h1>{{ category_name }}</h1>
+      {% if posts %}
+        {% for post in posts %}
+            <div class="post-preview">
+                <a href="{{ post.get_absolute_url }}">
+                    <h2 class="post-title">
+                        {{post.title}}
+                    </h2>
+                </a>
+                <p class="post-subtitle lead">
+                    {{post.subtitle}}
+                </p>
+                <p>{{post.content|markdown:"trusted"|truncatewords_html:30|striptags}}</p>
+                <p class="post-meta"> Posted {{post.created|naturaltime}} 
+                under <a href="{{ post.category.get_absolute_url }}"> {{post.category}} </a></p>
+            </div>
+            <hr>
+        {% endfor %}
+
+      {% else %}
+        <p> Nothing has been posted in this category yet. Thanks for checking in </p>
+      {% endif %}
+
+      {% else %}
+            The specified category does not exist!
+        {% endif %}
+        <!-- Pager -->
+        <!-- ul class="pager">
+            <li class="next">
+                <a href="#">Older Posts &rarr;</a>
+            </li>
+        </ul> -->
+{% endblock %}

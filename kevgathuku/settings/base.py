@@ -37,6 +37,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
+    'markdown_deux',
     'taggit',
     'blog',
 )
@@ -94,3 +95,17 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'collectedstatic')
 
 #Additional directories to find static files
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'staticfiles'),)
+
+#Location for user uploaded files
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+MEDIA_URL = '/media/'
+
+MARKDOWN_DEUX_STYLES = {
+        "trusted": {
+            "extras": {
+                "code-friendly": None,
+            },
+            "safe_mode": False,
+        }
+    }

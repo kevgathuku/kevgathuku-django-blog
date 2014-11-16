@@ -55,3 +55,4 @@ target/
 
 db.sqlite3
 collectedstatic/
+media/
