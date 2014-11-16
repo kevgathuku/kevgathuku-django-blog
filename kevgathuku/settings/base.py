@@ -37,7 +37,6 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
-    'ckeditor',
     'taggit',
     'blog',
 )
@@ -100,10 +99,3 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, 'staticfiles'),)
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 MEDIA_URL = '/media/'
-
-#Ckeditor Uploaded files
-CKEDITOR_UPLOAD_PATH = "uploads/"
-
-CKEDITOR_IMAGE_BACKEND = 'pillow'
-
-CKEDITOR_JQUERY_URL = '//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js'
