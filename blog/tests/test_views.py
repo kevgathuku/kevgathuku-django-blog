@@ -22,6 +22,14 @@ class HomePageTest(TestCase):
         expected_html = render_to_string('blog/index.html')
         self.assertEqual(response.content.decode(), expected_html)
 
+    def test_home_page_displays_post_title(self):
+        published = PublishedPostFactory.create()
+
+        response = self.client.get('/')
+
+        self.assertContains(response, "Published Post")
+
+
     def test_home_page_displays_only_published_items(self):
         unpublished = UnPublishedPostFactory.create()
         published = PublishedPostFactory.create()
@@ -30,6 +38,25 @@ class HomePageTest(TestCase):
 
         self.assertContains(response, "Published Post")
         self.assertNotContains(response, "My Unpublished Post")
+
+    def test_page_number_not_an_integer_redirects_to_home_page(self):
+        published = PublishedPostFactory.create()
+
+        response = self.client.get('/?page=index')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Published Post")
+
+    def test_page_number_out_of_range_redirects_to_last_page(self):
+        PostFactory.reset_sequence()
+        posts = PostFactory.create_batch(10, published=True, content='content')
+
+        response = self.client.get('/?page=999')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, posts[0].title)
+        self.assertNotContains(response, posts[9].title)
+
 
 class CategoryTest(TestCase):
 

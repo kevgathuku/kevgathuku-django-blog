@@ -11,7 +11,7 @@ def index(request):
     context = {}
     page = request.GET.get('page', 1)
     index_queryset = Post.objects.filter(published=True).order_by('-created')
-    paginator = Paginator(index_queryset, 5)
+    paginator = Paginator(index_queryset, 5, orphans=2)
 
     try:
         posts = paginator.page(page)
@@ -25,6 +25,7 @@ def index(request):
         posts = paginator.page(paginator.num_pages)
 
     context['posts'] = posts
+    # context['page'] = page
 
     return render(request, 'blog/index.html', context)
 
