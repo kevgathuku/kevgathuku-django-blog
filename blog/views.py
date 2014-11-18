@@ -25,7 +25,6 @@ def index(request):
         posts = paginator.page(paginator.num_pages)
 
     context['posts'] = posts
-    # context['page'] = page
 
     return render(request, 'blog/index.html', context)
 

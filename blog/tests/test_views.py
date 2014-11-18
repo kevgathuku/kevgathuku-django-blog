@@ -29,7 +29,6 @@ class HomePageTest(TestCase):
 
         self.assertContains(response, "Published Post")
 
-
     def test_home_page_displays_only_published_items(self):
         unpublished = UnPublishedPostFactory.create()
         published = PublishedPostFactory.create()
@@ -38,6 +37,10 @@ class HomePageTest(TestCase):
 
         self.assertContains(response, "Published Post")
         self.assertNotContains(response, "My Unpublished Post")
+
+
+class PaginationTest(HomePageTest):
+    """Pagination Tests for the Index Page"""
 
     def test_page_number_not_an_integer_redirects_to_home_page(self):
         published = PublishedPostFactory.create()
@@ -57,6 +60,29 @@ class HomePageTest(TestCase):
         self.assertContains(response, posts[0].title)
         self.assertNotContains(response, posts[9].title)
 
+    def test_index_page_displays_next_page_link(self):
+        PostFactory.reset_sequence()
+        posts = PostFactory.create_batch(10, published=True, content='some content')
+
+        response = self.client.get('/')
+
+        self.assertContains(response, 'Older Posts')
+
+    def test_next_page_link_not_displayed_if_not_enough_posts(self):
+        published = PublishedPostFactory.create()
+
+        response = self.client.get('/')
+
+        self.assertNotContains(response, 'Older Posts')
+
+    def test_previous_page_link_shown_if_enough_posts(self):
+        PostFactory.reset_sequence()
+        posts = PostFactory.create_batch(10, published=True, content='some content')
+
+        response = self.client.get('/?page=2')
+
+        self.assertContains(response, 'Newer Posts')
+        
 
 class CategoryTest(TestCase):
 
