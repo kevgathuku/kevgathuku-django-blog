@@ -41,15 +41,26 @@
     </div>
     <hr>
 
-    <!-- Pager -->
-    <!-- <ul class="pager">
-        <li class="next">
-            <a href="#">Older Posts &rarr;</a>
-        </li>
-    </ul> -->
-
     {% empty %}
     <p> Nothing has been posted yet. Thanks for checking in </p>
     {% endfor %}
+
+    {% if posts.has_previous %}
+    <!-- Pager -->
+    <ul class="pager">
+        <li class="previous">
+            <a href="/?page={{posts.previous_page_number}}">&larr; Newer Posts </a>
+        </li>
+    </ul>
+    {% endif %}
+
+    {% if posts.has_next %}
+    <!-- Pager -->
+    <ul class="pager">
+        <li class="next">
+            <a href="/?page={{posts.next_page_number}}">Older Posts &rarr;</a>
+        </li>
+    </ul>
+    {% endif %}
 
 {% endblock %}

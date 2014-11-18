@@ -8,7 +8,7 @@
 
 {% block title %}
   {% if category %}
-    {{ category_name }} 
+    {{ category.name }} 
 
   {% else %}
 
@@ -38,7 +38,7 @@
 
 {% block main %}
     {% if category %}
-    <h1>{{ category_name }}</h1>
+    <h1>{{ category.name }}</h1>
       {% if posts %}
         {% for post in posts %}
             <div class="post-preview">
@@ -63,11 +63,24 @@
 
       {% else %}
             The specified category does not exist!
-        {% endif %}
-        <!-- Pager -->
-        <!-- ul class="pager">
-            <li class="next">
-                <a href="#">Older Posts &rarr;</a>
-            </li>
-        </ul> -->
+    {% endif %}
+
+    {% if posts.has_previous %}
+    <!-- Pager -->
+    ul class="pager">
+        <li class="next">
+            <a href="/category/?page={{posts.previous_page_number}">&larr; Newer Posts</a>
+        </li>
+    </ul>
+    {% endif %}
+
+    {% if posts.has_next %}
+    <!-- Pager -->
+    ul class="pager">
+        <li class="next">
+            <a href="/category/?page={{posts.next_page_number}}">Older Posts &rarr;</a>
+        </li>
+    </ul>
+    {% endif %}
+
 {% endblock %}
