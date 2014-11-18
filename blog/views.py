@@ -33,20 +33,31 @@ def category(request, category_name_slug):
 
     # Create a context dictionary which we can pass to the template rendering engine.
     context_dict = {}
+    page = request.GET.get('page')
 
     try:
         # Can we find a category name slug with the given name?
         # If we can't, the .get() method raises a DoesNotExist exception.
-        # So the .get() method returns one model instance or raises an exception.
         category = Category.objects.get(slug=category_name_slug)
         
-        context_dict['category_name'] = category.name
         # Retrieve all of the associated pages.
         # Note that filter returns >= 1 model instance.
         cat_posts = Post.objects.filter(category=category,published=True).order_by('-created')
 
-        # Adds our results list to the template context under name pages.
-        context_dict['posts'] = cat_posts
+        paginator = Paginator(cat_posts, 5, orphans=2)
+
+        try:
+            posts = paginator.page(page)
+
+        except PageNotAnInteger:
+            # If page is not an integer, deliver first page.
+            posts = paginator.page(1)
+
+        except EmptyPage:
+            # If page is out of range (e.g. 9999), deliver last page of results.
+            posts = paginator.page(paginator.num_pages)
+
+        context_dict['posts'] = posts
 
         # We also add the category object from the database to the context dictionary.
         # We'll use this in the template to verify that the category exists.

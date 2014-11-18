@@ -120,4 +120,58 @@ class CategoryTest(TestCase):
 
         response = self.client.get('/category/{slug}/'.format(slug=test_category.slug))
 
-        self.assertContains(response, 'Nothing has been posted in this category yet. Thanks for checking in')
+        self.assertContains(response, 'Nothing has been posted in this category yet.')
+
+
+class CategoryPaginationTest(CategoryTest):
+    """Pagination Tests for the Category View"""
+
+    def test_page_number_not_an_integer_redirects_to_category_view(self):
+        cat = CategoryFactory()
+        published = PublishedPostFactory.create(category=cat)
+
+        response = self.client.get('/category/{slug}/?page=ab'.format(slug=cat.slug))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Published Post")
+
+    def test_page_number_out_of_range_redirects_to_last_page(self):
+        cat = CategoryFactory()
+        PostFactory.reset_sequence()
+        posts = PostFactory.create_batch(10, published=True, 
+                            content='content', category=cat)
+
+        response = self.client.get('/category/{slug}/?page=999'.format(
+                                                slug=cat.slug))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, posts[0].title)
+        self.assertNotContains(response, posts[9].title)
+
+    def test_category_view_displays_next_page_link(self):
+        cat = CategoryFactory(name='test')
+        PostFactory.reset_sequence()
+        posts = PostFactory.create_batch(10, published=True, 
+                content='some content', category=cat)
+
+        response = self.client.get('/category/{slug}/'.format(slug=cat.slug))
+
+        self.assertContains(response, 'Older Posts')
+
+    def test_next_page_link_not_displayed_if_not_enough_posts(self):
+        cat = CategoryFactory()
+        published = PublishedPostFactory.create(category=cat)
+
+        response = self.client.get('/category/{slug}/'.format(slug=cat.slug))
+
+        self.assertNotContains(response, 'Older Posts')
+
+    def test_previous_page_link_shown_if_enough_posts(self):
+        cat = CategoryFactory()
+        PostFactory.reset_sequence()
+        posts = PostFactory.create_batch(10, published=True, 
+                content='some content', category=cat)
+
+        response = self.client.get('/category/{slug}/?page=2'.format(slug=cat.slug))
+
+        self.assertContains(response, 'Newer Posts')
