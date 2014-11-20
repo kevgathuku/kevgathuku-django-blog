@@ -4,10 +4,10 @@ from django.core.urlresolvers import reverse
 
 from taggit.managers import TaggableManager
 
-# Create your models here.
+
 class Post(models.Model):
-    title = models.CharField(max_length=200,unique=True)
-    slug = models.SlugField(max_length=100,unique=True)
+    title = models.CharField(max_length=200, unique=True)
+    slug = models.SlugField(max_length=100, unique=True)
     subtitle = models.CharField(max_length=200, blank=True)
     content = models.TextField()
     created = models.DateTimeField(db_index=True, auto_now_add=True)
@@ -23,8 +23,9 @@ class Post(models.Model):
     def get_absolute_url(self):
         return reverse('blog:post', args=[str(self.slug)])
 
+
 class Category(models.Model):
-    name = models.CharField(max_length=100,unique=True)
+    name = models.CharField(max_length=100, unique=True)
     slug = models.SlugField(unique=True)
     description = models.TextField(blank=True)
 

@@ -1,5 +1,8 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.views import generic
+from django.http import HttpResponseRedirect
+from django.core.mail import send_mail
+from django.core.context_processors import csrf
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from .models import Post, Category
@@ -30,8 +33,8 @@ def index(request):
 
 
 def category(request, category_name_slug):
+    """The category view. Displays posts under a certain category"""
 
-    # Create a context dictionary which we can pass to the template rendering engine.
     context_dict = {}
     page = request.GET.get('page')
 
@@ -39,10 +42,11 @@ def category(request, category_name_slug):
         # Can we find a category name slug with the given name?
         # If we can't, the .get() method raises a DoesNotExist exception.
         category = Category.objects.get(slug=category_name_slug)
-        
+
         # Retrieve all of the associated pages.
         # Note that filter returns >= 1 model instance.
-        cat_posts = Post.objects.filter(category=category,published=True).order_by('-created')
+        cat_posts = Post.objects.filter(
+            category=category, published=True).order_by('-created')
 
         paginator = Paginator(cat_posts, 5, orphans=2)
 
@@ -54,18 +58,18 @@ def category(request, category_name_slug):
             posts = paginator.page(1)
 
         except EmptyPage:
-            # If page is out of range (e.g. 9999), deliver last page of results.
+            # If page is out of range (e.g. 999), display last page
             posts = paginator.page(paginator.num_pages)
 
         context_dict['posts'] = posts
 
-        # We also add the category object from the database to the context dictionary.
+        # Add the category object from the database to the context dictionary.
         # We'll use this in the template to verify that the category exists.
         context_dict['category'] = category
 
     except Category.DoesNotExist:
         # We get here if we didn't find the specified category.
-        # Don't do anything - the template displays the "no category" message for us.
+        # Don't do anything. The template displays the error messsage.
         pass
 
     # Go render the response and return it to the client.
@@ -77,14 +81,30 @@ class ShowPost(generic.DetailView):
     template_name = 'blog/post.html'
 
     def get_object(self):
-        return get_object_or_404(Post.objects.filter(slug=self.kwargs['slug'],published=True))
+        return get_object_or_404(Post.objects.filter(
+            slug=self.kwargs['slug'], published=True))
 
 
 def about(request):
     return render(request, 'blog/about.html')
 
+
 def about_site(request):
     return render(request, 'blog/about-this-site.html')
 
+
 def contact(request):
-    return render(request, 'blog/contact.html')
+
+    context = {}
+    context.update(csrf(request))
+
+    if request.method == 'POST':
+        name = request.POST.get('name', '')
+        message = request.POST.get('message', '')
+        from_email = request.POST.get('email', '')
+        subject = "[kevgathuku] Web Contact Form"
+        send_mail(subject, message, from_email,
+            ['kevgathuku@gmail.com'], fail_silently=False)
+        return redirect('/contact/')
+
+    return render(request, 'blog/contact.html', context)

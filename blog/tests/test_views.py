@@ -1,9 +1,10 @@
 from django.test import TestCase
-from django.http import HttpRequest
+from django.core import mail
 from django.core.urlresolvers import resolve
 from django.template.loader import render_to_string
+from django.utils.html import escape
 
-from blog.views import index, category
+from blog.views import index, category, contact
 from .factories import *
 
 
@@ -62,7 +63,8 @@ class PaginationTest(HomePageTest):
 
     def test_index_page_displays_next_page_link(self):
         PostFactory.reset_sequence()
-        posts = PostFactory.create_batch(10, published=True, content='some content')
+        posts = PostFactory.create_batch(
+            10, published=True, content='some content')
 
         response = self.client.get('/')
 
@@ -77,12 +79,13 @@ class PaginationTest(HomePageTest):
 
     def test_previous_page_link_shown_if_enough_posts(self):
         PostFactory.reset_sequence()
-        posts = PostFactory.create_batch(10, published=True, content='some content')
+        posts = PostFactory.create_batch(
+            10, published=True, content='some content')
 
         response = self.client.get('/?page=2')
 
         self.assertContains(response, 'Newer Posts')
-        
+
 
 class CategoryTest(TestCase):
 
@@ -101,8 +104,8 @@ class CategoryTest(TestCase):
 
     def test_category_view_displays_only_published_items(self):
         test_category = CategoryFactory(name='test category')
-        unpublished = UnPublishedPostFactory.create(category = test_category)
-        published = PublishedPostFactory.create(category = test_category)
+        unpublished = UnPublishedPostFactory.create(category=test_category)
+        published = PublishedPostFactory.create(category=test_category)
 
         response = self.client.get('/category/%s/' % test_category.slug)
 
@@ -118,9 +121,11 @@ class CategoryTest(TestCase):
     def test_empty_category(self):
         test_category = CategoryFactory(name='test category')
 
-        response = self.client.get('/category/{slug}/'.format(slug=test_category.slug))
+        response = self.client.get(
+            '/category/{slug}/'.format(slug=test_category.slug))
 
-        self.assertContains(response, 'Nothing has been posted in this category yet.')
+        self.assertContains(
+            response, 'Nothing has been posted in this category yet.')
 
 
 class CategoryPaginationTest(CategoryTest):
@@ -130,7 +135,8 @@ class CategoryPaginationTest(CategoryTest):
         cat = CategoryFactory()
         published = PublishedPostFactory.create(category=cat)
 
-        response = self.client.get('/category/{slug}/?page=ab'.format(slug=cat.slug))
+        response = self.client.get(
+            '/category/{slug}/?page=ab'.format(slug=cat.slug))
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Published Post")
@@ -138,11 +144,11 @@ class CategoryPaginationTest(CategoryTest):
     def test_page_number_out_of_range_redirects_to_last_page(self):
         cat = CategoryFactory()
         PostFactory.reset_sequence()
-        posts = PostFactory.create_batch(10, published=True, 
-                            content='content', category=cat)
+        posts = PostFactory.create_batch(
+            10, published=True, content='content', category=cat)
 
-        response = self.client.get('/category/{slug}/?page=999'.format(
-                                                slug=cat.slug))
+        response = self.client.get(
+            '/category/{slug}/?page=999'.format(slug=cat.slug))
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, posts[0].title)
@@ -151,10 +157,11 @@ class CategoryPaginationTest(CategoryTest):
     def test_category_view_displays_next_page_link(self):
         cat = CategoryFactory(name='test')
         PostFactory.reset_sequence()
-        posts = PostFactory.create_batch(10, published=True, 
-                content='some content', category=cat)
+        posts = PostFactory.create_batch(
+            10, published=True, content='some content', category=cat)
 
-        response = self.client.get('/category/{slug}/'.format(slug=cat.slug))
+        response = self.client.get(
+            '/category/{slug}/'.format(slug=cat.slug))
 
         self.assertContains(response, 'Older Posts')
 
@@ -169,9 +176,53 @@ class CategoryPaginationTest(CategoryTest):
     def test_previous_page_link_shown_if_enough_posts(self):
         cat = CategoryFactory()
         PostFactory.reset_sequence()
-        posts = PostFactory.create_batch(10, published=True, 
-                content='some content', category=cat)
+        posts = PostFactory.create_batch(
+            10, published=True, content='some content', category=cat)
 
-        response = self.client.get('/category/{slug}/?page=2'.format(slug=cat.slug))
+        response = self.client.get(
+            '/category/{slug}/?page=2'.format(slug=cat.slug))
 
         self.assertContains(response, 'Newer Posts')
+
+
+class ContactViewTest(TestCase):
+    """Tests the Contact View"""
+
+    def post_invalid_input(self):
+        return self.client.post(
+            '/contact/',
+            data={
+            'name': '',
+            'email': 'me@gmail.com',
+            'message': 'message'
+                }
+        )
+
+    def post_valid_input(self):
+        return self.client.post(
+            '/contact/',
+            data={
+            'name': 'Blog Fan',
+            'email': 'myemail@email.com',
+            'message': 'I am your biggest fan',
+                }
+            )
+
+    def test_contact_view_resolves_to_correct_view(self):
+        cat = resolve('/contact/')
+        self.assertEqual(cat.func, contact)
+
+    def test_uses_contact_template(self):
+        response = self.client.get('/contact/')
+        self.assertTemplateUsed(response, 'blog/contact.html')
+
+    def test_contact_form_has_csrf_token(self):
+        response = self.client.get('/contact/')
+
+        self.assertIn('csrfmiddlewaretoken', response.content.decode())
+
+    def test_mail_sent_on_successful_POST_request(self):
+        self.post_valid_input()
+
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].subject, '[kevgathuku] Web Contact Form')
