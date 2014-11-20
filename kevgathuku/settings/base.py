@@ -40,6 +40,7 @@ INSTALLED_APPS = (
     'markdown_deux',
     'taggit',
     'blog',
+    'djrill',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -109,3 +110,8 @@ MARKDOWN_DEUX_STYLES = {
         "safe_mode": False,
     }
 }
+
+# Mandrill Config
+MANDRILL_API_KEY = os.environ['MANDRILL_API_KEY']
+
+EMAIL_BACKEND = "djrill.mail.backends.djrill.DjrillBackend"
