@@ -10,11 +10,14 @@ addons:
   postgresql: '9.3'
 install:
 - pip install -r requirements/testing.txt
+- pip install coveralls
 before_script:
 - psql -c 'create database kevgathuku_test;' -U postgres
 - python manage.py migrate --noinput
 script:
-- python manage.py test
+- coverage run manage.py test
+after_success:
+  coveralls
 deploy:
   provider: heroku
   api_key:

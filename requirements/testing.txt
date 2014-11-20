@@ -3,3 +3,4 @@ django-mailer==0.1.0
 factory-boy==2.4.1
 django-libs==1.64.7
 selenium==2.44.0
+coverage==3.7.1
