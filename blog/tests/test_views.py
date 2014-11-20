@@ -1,6 +1,8 @@
 from django.test import TestCase
+from django.core import mail
 from django.core.urlresolvers import resolve
 from django.template.loader import render_to_string
+from django.utils.html import escape
 
 from blog.views import index, category, contact
 from .factories import *
@@ -186,6 +188,26 @@ class CategoryPaginationTest(CategoryTest):
 class ContactViewTest(TestCase):
     """Tests the Contact View"""
 
+    def post_invalid_input(self):
+        return self.client.post(
+            '/contact/',
+            data={
+            'name': '',
+            'email': 'me@gmail.com',
+            'message': 'message'
+                }
+        )
+
+    def post_valid_input(self):
+        return self.client.post(
+            '/contact/',
+            data={
+            'name': 'Blog Fan',
+            'email': 'myemail@email.com',
+            'message': 'I am your biggest fan',
+                }
+            )
+
     def test_contact_view_resolves_to_correct_view(self):
         cat = resolve('/contact/')
         self.assertEqual(cat.func, contact)
@@ -194,18 +216,13 @@ class ContactViewTest(TestCase):
         response = self.client.get('/contact/')
         self.assertTemplateUsed(response, 'blog/contact.html')
 
-    def test_contact_view_returns_correct_html(self):
+    def test_contact_form_has_csrf_token(self):
         response = self.client.get('/contact/')
-        expected_html = render_to_string('blog/contact.html')
-        self.assertEqual(response.content.decode(), expected_html)
 
-    def test_redirects_on_successful_POST_submission(self):
-        response = self.client.post(
-            '/contact/',
-            data={
-            'name': 'Blog Fan',
-            'email': 'myemail@email.com',
-            'message': 'I am your biggest fan',
-                }
-        )
-        self.assertRedirects(response, '/')
+        self.assertIn('csrfmiddlewaretoken', response.content.decode())
+
+    def test_mail_sent_on_successful_POST_request(self):
+        self.post_valid_input()
+
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].subject, '[kevgathuku] Web Contact Form')

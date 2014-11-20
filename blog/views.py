@@ -1,8 +1,8 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.views import generic
-from django.views.decorators.csrf import csrf_protect
 from django.http import HttpResponseRedirect
 from django.core.mail import send_mail
+from django.core.context_processors import csrf
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from .models import Post, Category
@@ -92,8 +92,12 @@ def about(request):
 def about_site(request):
     return render(request, 'blog/about-this-site.html')
 
-@csrf_protect
+
 def contact(request):
+
+    context = {}
+    context.update(csrf(request))
+
     if request.method == 'POST':
         name = request.POST.get('name', '')
         message = request.POST.get('message', '')
@@ -101,6 +105,6 @@ def contact(request):
         subject = "[kevgathuku] Web Contact Form"
         send_mail(subject, message, from_email,
             ['kevgathuku@gmail.com'], fail_silently=False)
-        return HttpResponseRedirect('/')
+        return redirect('/contact/')
 
-    return render(request, 'blog/contact.html')
+    return render(request, 'blog/contact.html', context)
