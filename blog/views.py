@@ -1,5 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.views import generic
+from django.http import HttpResponseRedirect
+from django.core.mail import send_mail
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from .models import Post, Category
@@ -91,4 +93,13 @@ def about_site(request):
 
 
 def contact(request):
+    if request.method == 'POST':
+        name = request.POST.get('name', '')
+        message = request.POST.get('message', '')
+        from_email = request.POST.get('email', '')
+        subject = "[kevgathuku] Web Contact Form"
+        send_mail(subject, message, from_email,
+            ['kevgathuku@gmail.com'], fail_silently=False)
+        return HttpResponseRedirect('/')
+
     return render(request, 'blog/contact.html')
