@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.views import generic
+from django.views.decorators.csrf import csrf_protect
 from django.http import HttpResponseRedirect
 from django.core.mail import send_mail
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -91,7 +92,7 @@ def about(request):
 def about_site(request):
     return render(request, 'blog/about-this-site.html')
 
-
+@csrf_protect
 def contact(request):
     if request.method == 'POST':
         name = request.POST.get('name', '')

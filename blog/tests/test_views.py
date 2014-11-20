@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.core.urlresolvers import resolve
 from django.template.loader import render_to_string
 
-from blog.views import index, category
+from blog.views import index, category, contact
 from .factories import *
 
 
@@ -181,3 +181,31 @@ class CategoryPaginationTest(CategoryTest):
             '/category/{slug}/?page=2'.format(slug=cat.slug))
 
         self.assertContains(response, 'Newer Posts')
+
+
+class ContactViewTest(TestCase):
+    """Tests the Contact View"""
+
+    def test_contact_view_resolves_to_correct_view(self):
+        cat = resolve('/contact/')
+        self.assertEqual(cat.func, contact)
+
+    def test_uses_contact_template(self):
+        response = self.client.get('/contact/')
+        self.assertTemplateUsed(response, 'blog/contact.html')
+
+    def test_contact_view_returns_correct_html(self):
+        response = self.client.get('/contact/')
+        expected_html = render_to_string('blog/contact.html')
+        self.assertEqual(response.content.decode(), expected_html)
+
+    def test_redirects_on_successful_POST_submission(self):
+        response = self.client.post(
+            '/contact/',
+            data={
+            'name': 'Blog Fan',
+            'email': 'myemail@email.com',
+            'message': 'I am your biggest fan',
+                }
+        )
+        self.assertRedirects(response, '/')
