@@ -28,4 +28,6 @@ class LayoutAndStylingTest(FunctionalTest):
         links = footer.find_elements_by_tag_name('a')
         twitter_link = links[0]
 
-        self.assertIn('https://twitter.com/kevgathuku', twitter_link.get_attribute('href'))
+        self.assertIn(
+            'https://twitter.com/kevgathuku',
+            twitter_link.get_attribute('href'))

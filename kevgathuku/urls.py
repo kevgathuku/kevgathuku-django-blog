@@ -3,7 +3,8 @@ from django.contrib import admin
 
 from blog.views import index, category
 
-urlpatterns = patterns('',
+urlpatterns = patterns(
+    '',
     # Examples:
     # url(r'^$', 'kevgathuku.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
@@ -13,5 +14,7 @@ urlpatterns = patterns('',
     url(r'^about-this-site/$', 'blog.views.about_site', name='about_site'),
     url(r'^contact/$', 'blog.views.contact', name='contact'),
     url(r'^post/', include('blog.urls', namespace='blog')),
-    url(r'^category/(?P<category_name_slug>[\w\-]+)/$', category, name='category'),
+    url(
+        r'^category/(?P<category_name_slug>[\w\-]+)/$',
+        category, name='category'),
 )
