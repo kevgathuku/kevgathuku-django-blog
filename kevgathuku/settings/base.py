@@ -93,19 +93,19 @@ STATIC_URL = '/static/'
 # Where static files are collected
 STATIC_ROOT = os.path.join(BASE_DIR, 'collectedstatic')
 
-#Additional directories to find static files
+# Additional directories to find static files
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'staticfiles'),)
 
-#Location for user uploaded files
+# Location for user uploaded files
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 MEDIA_URL = '/media/'
 
 MARKDOWN_DEUX_STYLES = {
-        "trusted": {
-            "extras": {
-                "code-friendly": None,
-            },
-            "safe_mode": False,
-        }
+    "trusted": {
+        "extras": {
+            "code-friendly": None,
+        },
+        "safe_mode": False,
     }
+}
