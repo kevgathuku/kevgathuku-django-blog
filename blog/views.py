@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views import generic
-from django.http import HttpResponseRedirect
-from django.core.mail import send_mail
+from django.http import JsonResponse, HttpResponseForbidden
+from django.core.mail import send_mail, BadHeaderError
 from django.core.context_processors import csrf
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
@@ -103,8 +103,14 @@ def contact(request):
         message = request.POST.get('message', '')
         from_email = request.POST.get('email', '')
         subject = "[kevgathuku] Web Contact Form"
-        send_mail(subject, message, from_email,
-            ['kevgathuku@gmail.com'], fail_silently=False)
-        return redirect('/contact/')
+        if name and message and from_email:
+            try:
+                send_mail(subject, message, from_email,
+                    ['kevgathuku@gmail.com'], fail_silently=False)
+            except BadHeaderError:
+                return HttpResponseForbidden(reason='Invalid header found.')
+            return JsonResponse({'success': '1'})
+        else:
+            return HttpResponseForbidden(reason='Make sure all fields are entered and valid.')
 
     return render(request, 'blog/contact.html', context)

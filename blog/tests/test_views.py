@@ -226,3 +226,14 @@ class ContactViewTest(TestCase):
 
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(mail.outbox[0].subject, '[kevgathuku] Web Contact Form')
+
+    def test_correct_reponse_on_successful_POST_request(self):
+        resp = self.post_valid_input()
+
+        self.assertJSONEqual(resp.content.decode(), {'success': '1'})
+
+    def test_correct_response_on_invalid_POST_rquest(self):
+        resp = self.post_invalid_input()
+
+        self.assertEqual(resp.status_code, 403)
+        self.assertEqual(resp.reason_phrase, 'Make sure all fields are entered and valid.')
