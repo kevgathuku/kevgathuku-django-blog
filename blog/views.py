@@ -1,7 +1,7 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404
 from django.views import generic
-from django.http import HttpResponseRedirect
-from django.core.mail import send_mail
+from django.http import JsonResponse, HttpResponseForbidden
+from django.core.mail import send_mail, BadHeaderError
 from django.core.context_processors import csrf
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
@@ -41,12 +41,12 @@ def category(request, category_name_slug):
     try:
         # Can we find a category name slug with the given name?
         # If we can't, the .get() method raises a DoesNotExist exception.
-        category = Category.objects.get(slug=category_name_slug)
+        cat = Category.objects.get(slug=category_name_slug)
 
         # Retrieve all of the associated pages.
         # Note that filter returns >= 1 model instance.
         cat_posts = Post.objects.filter(
-            category=category, published=True).order_by('-created')
+            category=cat, published=True).order_by('-created')
 
         paginator = Paginator(cat_posts, 5, orphans=2)
 
@@ -65,7 +65,7 @@ def category(request, category_name_slug):
 
         # Add the category object from the database to the context dictionary.
         # We'll use this in the template to verify that the category exists.
-        context_dict['category'] = category
+        context_dict['category'] = cat
 
     except Category.DoesNotExist:
         # We get here if we didn't find the specified category.
@@ -102,9 +102,17 @@ def contact(request):
         name = request.POST.get('name', '')
         message = request.POST.get('message', '')
         from_email = request.POST.get('email', '')
-        subject = "[kevgathuku] Web Contact Form"
-        send_mail(subject, message, from_email,
-            ['kevgathuku@gmail.com'], fail_silently=False)
-        return redirect('/contact/')
+        subject = "[kevgathuku] New Message from {}".format(name)
+        if name and message and from_email:
+            try:
+                send_mail(
+                    subject, message, from_email,
+                    ['kevgathuku@gmail.com'], fail_silently=False)
+            except BadHeaderError:
+                return HttpResponseForbidden(reason='Invalid header found.')
+            return JsonResponse({'success': '1'})
+        else:
+            return HttpResponseForbidden(
+                reason='Make sure all fields are entered and valid.')
 
     return render(request, 'blog/contact.html', context)
