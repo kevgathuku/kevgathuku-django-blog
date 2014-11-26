@@ -1,9 +1,8 @@
-from django.shortcuts import render, get_object_or_404
-from django.views import generic
-from django.http import JsonResponse, HttpResponseForbidden
-from django.core.mail import send_mail, BadHeaderError
 from django.core.context_processors import csrf
+from django.core.mail import send_mail, BadHeaderError
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.http import JsonResponse, HttpResponseForbidden
+from django.shortcuts import render, get_object_or_404
 
 from .models import Post, Category
 
@@ -76,13 +75,13 @@ def category(request, category_name_slug):
     return render(request, 'blog/category.html', context_dict)
 
 
-class ShowPost(generic.DetailView):
-    model = Post
-    template_name = 'blog/post.html'
+def show_post(request, slug):
+    query = Post.objects.filter(slug=slug, published=True)
+    post = get_object_or_404(query)
 
-    def get_object(self):
-        return get_object_or_404(Post.objects.filter(
-            slug=self.kwargs['slug'], published=True))
+    context = {'post': post}
+
+    return render(request, 'blog/post.html', context)
 
 
 def about(request):
@@ -106,8 +105,11 @@ def contact(request):
         if name and message and from_email:
             try:
                 send_mail(
-                    subject, message, from_email,
-                    ['kevgathuku@gmail.com'], fail_silently=False)
+                    subject,
+                    message,
+                    from_email,
+                    ['kevgathuku@gmail.com'],
+                    fail_silently=False)
             except BadHeaderError:
                 return HttpResponseForbidden(reason='Invalid header found.')
             return JsonResponse({'success': '1'})

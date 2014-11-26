@@ -4,7 +4,7 @@ from django.core.urlresolvers import resolve
 from django.template.loader import render_to_string
 from django.utils.html import escape
 
-from blog.views import index, category, contact
+from blog.views import index, category, contact, show_post
 from .factories import *
 
 
@@ -239,3 +239,34 @@ class ContactViewTest(TestCase):
         self.assertEqual(resp.status_code, 403)
         self.assertEqual(
             resp.reason_phrase, 'Make sure all fields are entered and valid.')
+
+
+class ShowPostTest(TestCase):
+    """Test for individual post view"""
+
+    def test_post_url_resolves_to_correct_view(self):
+        found = resolve('/post/new/')
+        self.assertEqual(found.func, show_post)
+
+    def test_uses_post_template(self):
+        published = PublishedPostFactory.create()
+
+        response = self.client.get('/post/{}/'.format(published.slug))
+        self.assertTemplateUsed(response, 'blog/post.html')
+
+    def test_show_post_displays_post_content(self):
+        published = PublishedPostFactory.create()
+
+        response = self.client.get('/post/{}/'.format(published.slug))
+
+        self.assertContains(response, "Published Post")
+
+    def test_resolves_only_published_posts(self):
+        unpublished = UnPublishedPostFactory.create()
+        published = PublishedPostFactory.create()
+
+        response = self.client.get('/post/{}/'.format(published.slug))
+        bad_response = self.client.get('/post/{}/'.format(unpublished.slug))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(bad_response.status_code, 404)
