@@ -75,14 +75,14 @@ def category(request, category_name_slug):
     # Go render the response and return it to the client.
     return render(request, 'blog/category.html', context_dict)
 
+def show_post(request, slug):
+    query = Post.objects.filter(
+            slug=slug, published=True)
+    post = get_object_or_404(query)
 
-class ShowPost(generic.DetailView):
-    model = Post
-    template_name = 'blog/post.html'
+    context = {'post': post}
 
-    def get_object(self):
-        return get_object_or_404(Post.objects.filter(
-            slug=self.kwargs['slug'], published=True))
+    return render(request, 'blog/post.html', context)
 
 
 def about(request):
