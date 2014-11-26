@@ -41,6 +41,7 @@ INSTALLED_APPS = (
     'taggit',
     'blog',
     'djrill',
+    'analytical',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -115,3 +116,6 @@ MARKDOWN_DEUX_STYLES = {
 MANDRILL_API_KEY = os.environ['MANDRILL_API_KEY']
 
 EMAIL_BACKEND = "djrill.mail.backends.djrill.DjrillBackend"
+
+# Django Analytics
+CLICKY_SITE_ID = '100793665'
