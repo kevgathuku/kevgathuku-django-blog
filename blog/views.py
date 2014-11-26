@@ -1,6 +1,4 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.views import generic
-from django.http import HttpResponseRedirect
 from django.core.mail import send_mail
 from django.core.context_processors import csrf
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -75,9 +73,9 @@ def category(request, category_name_slug):
     # Go render the response and return it to the client.
     return render(request, 'blog/category.html', context_dict)
 
+
 def show_post(request, slug):
-    query = Post.objects.filter(
-            slug=slug, published=True)
+    query = Post.objects.filter(slug=slug, published=True)
     post = get_object_or_404(query)
 
     context = {'post': post}
@@ -103,8 +101,12 @@ def contact(request):
         message = request.POST.get('message', '')
         from_email = request.POST.get('email', '')
         subject = "[kevgathuku] Web Contact Form"
-        send_mail(subject, message, from_email,
-            ['kevgathuku@gmail.com'], fail_silently=False)
+        send_mail(
+            subject,
+            message,
+            from_email,
+            ['kevgathuku@gmail.com'],
+            fail_silently=False)
         return redirect('/contact/')
 
     return render(request, 'blog/contact.html', context)
