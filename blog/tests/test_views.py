@@ -194,7 +194,7 @@ class ContactViewTest(TestCase):
             data={
             'name': '',
             'email': 'me@gmail.com',
-            'message': 'message'
+            'message': 'The name is Bond, James Bond.'
             }
         )
 
@@ -239,6 +239,20 @@ class ContactViewTest(TestCase):
         self.assertEqual(resp.status_code, 403)
         self.assertEqual(
             resp.reason_phrase, 'Make sure all fields are entered and valid.')
+
+    def test_raises_403_on_invalid_headers(self):
+        resp = self.client.post(
+            '/contact/',
+            data={
+            'name': 'Blog Fan',
+            'email': 'myemail\n@email.com',
+            'message': 'I am your biggest fan',
+                }
+            )
+
+        self.assertEqual(resp.status_code, 403)
+        self.assertEqual(
+            resp.reason_phrase, 'Invalid header found.')
 
 
 class ShowPostTest(TestCase):
