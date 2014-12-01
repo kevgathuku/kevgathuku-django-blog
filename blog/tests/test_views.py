@@ -1,10 +1,10 @@
-from django.test import TestCase
 from django.core import mail
 from django.core.urlresolvers import resolve
 from django.template.loader import render_to_string
+from django.test import TestCase
 from django.utils.html import escape
 
-from blog.views import index, category, contact, show_post
+from blog.views import (about, about_site, category, contact, index, show_post)
 from .factories import *
 
 
@@ -194,7 +194,7 @@ class ContactViewTest(TestCase):
             data={
             'name': '',
             'email': 'me@gmail.com',
-            'message': 'message'
+            'message': 'The name is Bond, James Bond.'
             }
         )
 
@@ -240,6 +240,20 @@ class ContactViewTest(TestCase):
         self.assertEqual(
             resp.reason_phrase, 'Make sure all fields are entered and valid.')
 
+    def test_raises_403_on_invalid_headers(self):
+        resp = self.client.post(
+            '/contact/',
+            data={
+            'name': 'Blog Fan',
+            'email': 'myemail\n@email.com',
+            'message': 'I am your biggest fan',
+                }
+            )
+
+        self.assertEqual(resp.status_code, 403)
+        self.assertEqual(
+            resp.reason_phrase, 'Invalid header found.')
+
 
 class ShowPostTest(TestCase):
     """Test for individual post view"""
@@ -270,3 +284,37 @@ class ShowPostTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(bad_response.status_code, 404)
+
+
+class AboutMeTest(TestCase):
+    """Test for About me view"""
+
+    def test_about_url_resolves_to_correct_view(self):
+        found = resolve('/about/')
+        self.assertEqual(found.func, about)
+
+    def test_uses_correct_template(self):
+        response = self.client.get('/about/')
+        self.assertTemplateUsed(response, 'blog/about.html')
+
+    def test_about_me_page_returns_correct_html(self):
+        response = self.client.get('/about/')
+        expected_html = render_to_string('blog/about.html')
+        self.assertEqual(response.content.decode(), expected_html)
+
+
+class AboutSiteTest(TestCase):
+    """Test for About Site view"""
+
+    def test_about_site_url_resolves_to_correct_view(self):
+        found = resolve('/about-this-site/')
+        self.assertEqual(found.func, about_site)
+
+    def test_uses_correct_template(self):
+        response = self.client.get('/about-this-site/')
+        self.assertTemplateUsed(response, 'blog/about-this-site.html')
+
+    def test_about_site_page_returns_correct_html(self):
+        response = self.client.get('/about-this-site/')
+        expected_html = render_to_string('blog/about-this-site.html')
+        self.assertEqual(response.content.decode(), expected_html)

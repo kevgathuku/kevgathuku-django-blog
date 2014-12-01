@@ -7,6 +7,4 @@ source = blog, functional_tests
 
 [report]
 # Regexes for lines to exclude from consideration
-exclude_lines =
-
-    def __unicode__
+# exclude_lines =
